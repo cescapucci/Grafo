@@ -5,7 +5,11 @@ public class Grafo {
     int[] nodi;
     int[][] archi;
 
-    //costruttore
+    /**
+     * costruttore
+     * @param filePath
+     * @param splitBy
+     */
     public Grafo(String filePath, String splitBy) {
         Set<Integer> nodi = leggiGrafo(filePath, splitBy);
         this.nodi = new int[nodi.size() - 1];
@@ -17,10 +21,14 @@ public class Grafo {
         this.archi = leggiGrafo(filePath, splitBy, nodi);
     }
 
-
-
     //metodi
-    //nodi
+
+    /**
+     * legge da file quanti nodi sono e ripempie l'array insieme dei nodi
+     * @param filePath
+     * @param splitBy
+     * @return i nodi
+     */
     public static Set<Integer> leggiGrafo(String filePath, String splitBy) {
         Set<Integer> nodes = new HashSet<Integer>();
         String line = "";
@@ -42,7 +50,13 @@ public class Grafo {
         return nodes;
     }
 
-    //archi
+    /**
+     * legge da file quanti nodi sono e ripempie la matrice di adiacenza
+     * @param filePath
+     * @param splitBy
+     * @param nodi
+     * @return gli archi
+     */
     public static int[][] leggiGrafo(String filePath, String splitBy, Set<Integer> nodi) {
         int[][] archi = new int[nodi.size() - 1][nodi.size() - 1];
         String line = "";
@@ -70,7 +84,10 @@ public class Grafo {
         return archi;
     }
 
-
+    /**
+     *
+     * @return la stampa di vertici e archi
+     */
     @Override
     public String toString() {
         System.out.println("VERTICI: \n" + Arrays.toString(this.nodi));
@@ -82,6 +99,12 @@ public class Grafo {
 
     }
 
+    /**
+     * dato un  grafo anche ciclico e con pesi negativi, genera il mst usando la distanza
+     * e il predecessore di ogni nodo come strutture dati
+     * @param sorgente
+     * @throws ClassNotFoundException
+     */
     public void  BellmanFord (int sorgente) throws ClassNotFoundException{
         //strutture dati
         int dist[] = new int[nodi.length];
@@ -119,7 +142,7 @@ public class Grafo {
                     if (archi[j][i] != 0) {
                         int u = j;  //u=e.origine
                         int v = i;  //v=e.destinazione
-                        int w = archi[j][i];  //w=peso dell'arco (u,v)
+                        int w = archi[u][v];  //w=peso dell'arco (u,v)
 
                         if (dist[v] > dist[u] + w) {  //se posso migliorare genero un eccezione
                             throw new CicliNegativiException();
@@ -136,6 +159,64 @@ public class Grafo {
         System.out.println("DISTANZA: \n" + Arrays.toString(dist));
         System.out.println("\nPREDECESSORE: \n" + Arrays.toString(pred));
     }
+
+    /**
+     * mst  di un grafo aciclico con  pesi  non negativi, usa le due strutture dati
+     * distanza e predecessore dei nodi
+     * @param sorgente
+     */
+    public void Dijkstra(int sorgente){
+        //strutture dati
+        int dist[] = new int[nodi.length];
+        int pred[] = new int[nodi.length];
+        // queue
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+        for (int v : nodi) queue.add(v);    //aggiungo tutti i nodi alla lista
+
+        System.out.println("coda: \n" + queue.toString());
+
+        //inizializzo
+        for (int i = 0; i < nodi.length; i++){
+            dist[i]  = Integer.MAX_VALUE;
+            //pred[i] = null di già
+        }
+        dist [sorgente] = 0;
+
+        //principio di ottimalità
+       while (!queue.isEmpty()){  //finché ho nodi nella lista
+           //trovo u
+           int u = queue.get(0);
+           int i;
+           for (i = 1; i < queue.size(); i++){   //scorro  la lista
+               if (u > queue.get(i)) u = queue.get(i);  //prende la distanza minore
+           }
+
+           queue.remove(i); //rimuovo u da q
+           //
+           System.out.println("coda: \n" + queue.toString());
+           //
+           if (dist[u] == Integer.MAX_VALUE) break; //tutti gli altri  nodi sono inacccessibili
+
+
+           for (int j = 0; j < archi.length; j++){
+                if (archi[u][j] != 0) { //se sono  collegati
+                    int v = j;  //v=e.destinazione
+                    int w = archi[u][v];  //w=peso dell'arco (u,v)
+
+                    if (dist[v] > dist[u] + w){  //se non è ottimale aggiorno
+                        dist[v] = dist[u] + w;
+                        pred[v] = u;
+                    }
+                }
+           }
+
+        }
+
+        //stampo le strutture dati
+        System.out.println("DISTANZA: \n" + Arrays.toString(dist));
+        System.out.println("\nPREDECESSORE: \n" + Arrays.toString(pred));
+    }
+
 }
 
 

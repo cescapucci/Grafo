@@ -4,5 +4,6 @@ public class Main {
         Grafo g = new Grafo("C:\\Users\\francesca\\Desktop\\BellmanFord\\grafo.txt", ",");
         System.out.println(g.toString());
         g.BellmanFord(0);
+        g.Dijkstra(0);
     }
 }
