@@ -1,2 +1,2 @@
 # Grafo
- bellman ford e Dijkstra (forse)
+ bellman ford e parzialmente Dijkstra
